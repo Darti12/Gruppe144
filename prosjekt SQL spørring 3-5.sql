@@ -1,5 +1,12 @@
 
+INSERT INTO Person() VALUES (1, "Kari"), (2, "Ola");
 
+INSERT INTO Apparat VALUES (1, "Romaskin", "Roing"), (2, "Vekter", "Vektløfting");
+
+INSERT INTO Treningsøkt VALUES (1, '2018-02-22', '12:47:04', 4, 6, 30, "Lett styrkeøkt", 1), 
+							   (2, '2018-02-28', '17:32:19', 6, 3, 40, "Økt med roing", 2),
+                               (3, '2018-03-01', '10:38:01', 7, 8, 20, NULL, 1),
+                               (4, '2018-01-19', '18:00:05', 3, 2, 10, NULL, 2);
 
 INSERT INTO Notat VALUES (1, "BLA BLA VLA", 1), (2, "BLALALAL", 2);
 
