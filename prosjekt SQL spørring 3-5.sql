@@ -6,7 +6,7 @@ ORDER BY T.Dato AND T.Tid;
 #4
 SELECT Ø.ØvelseID, Ø.Navn
 FROM (Øvelse AS Ø JOIN ØvelseIGruppe AS ØIG ON (Ø.ØvelseID=ØIG.ØvelseID))
-		JOIN Øvelsegruppe AS ØG ON ØG.ØGID=ØIG.ØGID 
+		JOIN Øvelsesgruppe AS ØG ON ØG.ØGID=ØIG.ØGID 
 ORDER BY ØG.ØGID;
 
 #5
