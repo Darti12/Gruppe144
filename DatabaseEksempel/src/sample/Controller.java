@@ -4,9 +4,11 @@ import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 
 import java.net.URL;
 import java.sql.*;
@@ -26,6 +28,8 @@ public class Controller implements Initializable{
     @FXML public TextField treningsøktVarighet;
     @FXML public TextField treningsøktInformasjon;
     @FXML private ComboBox<String> treningsøktComboBox;
+    @FXML private GridPane treningsøktGridPane;
+    @FXML private TextField treningsøktrader;
 
 
     public Controller() throws SQLException {
@@ -101,6 +105,49 @@ public class Controller implements Initializable{
             String sql = "INSERT INTO Treningsøkt VALUES(" + tallID + ",'" + treningsøktdato + "','" + treningsøkttid + "'," + personligform + "," + prestasjon + "," + varighet + ",'" + info + "'," + PID + ")";
             System.out.println(sql);
             myStatement.executeUpdate(sql);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    @FXML
+    public void updatetreningsøktGridpane(){
+        try {
+            Statement myStatement = myConn.createStatement();
+            ResultSet rs = myStatement.executeQuery("SELECT * FROM Treningsøkt");
+            for(int i = 0; i < Integer.parseInt(treningsøktrader.getText()); i++){
+                rs.next();
+
+                Label cellTid = new Label(rs.getString("Tid"));
+                cellTid.setAlignment(Pos.CENTER);
+                cellTid.setMaxWidth(Double.MAX_VALUE);
+                treningsøktGridPane.add(cellTid,0, i);
+
+                Label cellPersonligForm = new Label(rs.getString("PersonligForm"));
+                cellPersonligForm.setAlignment(Pos.CENTER);
+                cellPersonligForm.setMaxWidth(Double.MAX_VALUE);
+                treningsøktGridPane.add(cellTid,1, i);
+
+                Label cellPrestasjon = new Label(rs.getString("Prestasjon"));
+                cellPrestasjon.setAlignment(Pos.CENTER);
+                cellPrestasjon.setMaxWidth(Double.MAX_VALUE);
+                treningsøktGridPane.add(cellTid,2, i);
+
+                Label cellVarighet = new Label(rs.getString("Varighet"));
+                cellVarighet.setAlignment(Pos.CENTER);
+                cellVarighet.setMaxWidth(Double.MAX_VALUE);
+                treningsøktGridPane.add(cellTid,3, i);
+
+                Label cellInformasjon = new Label(rs.getString("Info"));
+                cellInformasjon.setAlignment(Pos.CENTER);
+                cellInformasjon.setMaxWidth(Double.MAX_VALUE);
+                treningsøktGridPane.add(cellTid,4, i);
+
+//                Label cellNotat = new Label(rs.getString("Notat"));
+//                cellNotat.setAlignment(Pos.CENTER);
+//                cellNotat.setMaxWidth(Double.MAX_VALUE);
+//                treningsøktGridPane.add(cellTid,5, i);
+            }
         }catch(Exception e){
             System.out.println(e);
         }
