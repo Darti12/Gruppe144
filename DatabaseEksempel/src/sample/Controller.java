@@ -1,45 +1,31 @@
 package sample;
 
-import javafx.fxml.FXML;
-import java.lang.*;
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
+
+import java.net.URL;
+import java.sql.*;
+import java.util.ResourceBundle;
 
 public class Controller implements Initializable{
     public Connection myConn;
+    private ObservableList<String> liste = FXCollections.observableArrayList();
+
     @FXML public TextField apparatNavn;
     @FXML public TextField apparatFunksjon;
     @FXML public TextField øvelseNavn;
     @FXML public TextField treningsøktDato;
+    @FXML public TextField treningsøktTid;
     @FXML public TextField treningsøktPersonligForm;
     @FXML public TextField treningsøktPrestasjon;
     @FXML public TextField treningsøktVarighet;
     @FXML public TextField treningsøktInformasjon;
+    @FXML private ComboBox<String> treningsøktComboBox;
 
 
     public Controller() throws SQLException {
@@ -94,14 +80,25 @@ public class Controller implements Initializable{
     private void registrerTreningsøkt(){
         try {
             Statement myStatement2 = myConn.createStatement();
-            ResultSet rs2 = myStatement2.executeQuery("SELECT MAX(ØvelseID) FROM Øvelse");
+            ResultSet rs2 = myStatement2.executeQuery("SELECT MAX(TøID) FROM Treningsøkt");
             rs2.next();
-            int tallID = Integer.parseInt(rs2.getString("MAX(ØvelseID)")) + 1;
+            int tallID = Integer.parseInt(rs2.getString("MAX(TøID)")) + 1;
 
-            String navn = "";
+            String person = treningsøktComboBox.getValue();
+            Statement myStatement3 = myConn.createStatement();
+            ResultSet rs3 = myStatement3.executeQuery("SELECT PID FROM Person WHERE Navn='" + person + "'");
+            rs3.next();
+            int PID = Integer.parseInt(rs3.getString("PID"));
+
+            String treningsøktdato = treningsøktDato.getText();
+            String treningsøkttid = treningsøktTid.getText();
+            int personligform = Integer.parseInt(treningsøktPersonligForm.getText());
+            int prestasjon = Integer.parseInt(treningsøktPrestasjon.getText());
+            int varighet = Integer.parseInt(treningsøktVarighet.getText());
+            String info = treningsøktInformasjon.getText();
 
             Statement myStatement = myConn.createStatement();
-            String sql = "Insert into Øvelse VALUES(" + tallID + ", '" + navn + "')";
+            String sql = "INSERT INTO Treningsøkt VALUES(" + tallID + ",'" + treningsøktdato + "','" + treningsøkttid + "'," + personligform + "," + prestasjon + "," + varighet + ",'" + info + "'," + PID + ")";
             System.out.println(sql);
             myStatement.executeUpdate(sql);
         }catch(Exception e){
@@ -111,6 +108,19 @@ public class Controller implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("hei..");
+        System.out.println("Prosjektet fungerer...");
+        try{
+            Statement myStatement = myConn.createStatement();
+            ResultSet rs2 = myStatement.executeQuery("SELECT Navn FROM Person");
+            while (rs2.next()) {
+                String navn = rs2.getString("Navn");
+                System.out.println(navn);
+                liste.add(navn);
+            }
+            System.out.println(liste);
+            treningsøktComboBox.setItems(liste);
+        }catch(Exception e){
+
+        }
     }
 }
