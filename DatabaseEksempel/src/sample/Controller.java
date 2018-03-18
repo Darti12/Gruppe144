@@ -30,6 +30,8 @@ public class Controller implements Initializable{
     @FXML private ComboBox<String> treningsøktComboBox;
     @FXML private GridPane treningsøktGridPane;
     @FXML private TextField treningsøktrader;
+    @FXML private TextField registrerØvelsegruppeNavn;
+    @FXML private TextField registrerØvelsegruppeBeskrivelse;
 
 
     public Controller() throws SQLException {
@@ -112,10 +114,35 @@ public class Controller implements Initializable{
 
     @FXML
     public void updatetreningsøktGridpane(){
+        treningsøktGridPane.getChildren().retainAll(treningsøktGridPane.getChildren().get(0));
+        Label Tid = new Label("Tid");
+        Tid.setAlignment(Pos.CENTER);
+        Tid.setMaxWidth(Double.MAX_VALUE);
+        Label PersonligForm = new Label("PersonligForm");
+        PersonligForm.setAlignment(Pos.CENTER);
+        PersonligForm.setMaxWidth(Double.MAX_VALUE);
+        Label Prestasjon = new Label("Prestasjon");
+        Prestasjon.setAlignment(Pos.CENTER);
+        Prestasjon.setMaxWidth(Double.MAX_VALUE);
+        Label Varighet = new Label("Varighet");
+        Varighet.setAlignment(Pos.CENTER);
+        Varighet.setMaxWidth(Double.MAX_VALUE);
+        Label Informasjon = new Label("Informasjon");
+        Informasjon.setAlignment(Pos.CENTER);
+        Informasjon.setMaxWidth(Double.MAX_VALUE);
+        Label Notat = new Label("Notat");
+        Notat.setAlignment(Pos.CENTER);
+        Notat.setMaxWidth(Double.MAX_VALUE);
+        treningsøktGridPane.add(Tid,0, 0);
+        treningsøktGridPane.add(PersonligForm,1, 0);
+        treningsøktGridPane.add(Prestasjon,2, 0);
+        treningsøktGridPane.add(Varighet,3, 0);
+        treningsøktGridPane.add(Informasjon,4, 0);
+        treningsøktGridPane.add(Notat,5, 0);
         try {
             Statement myStatement = myConn.createStatement();
             ResultSet rs = myStatement.executeQuery("SELECT * FROM Treningsøkt");
-            for(int i = 0; i < Integer.parseInt(treningsøktrader.getText()); i++){
+            for(int i = 1; i < Integer.parseInt(treningsøktrader.getText())+1; i++){
                 rs.next();
 
                 Label cellTid = new Label(rs.getString("Tid"));
@@ -126,22 +153,22 @@ public class Controller implements Initializable{
                 Label cellPersonligForm = new Label(rs.getString("PersonligForm"));
                 cellPersonligForm.setAlignment(Pos.CENTER);
                 cellPersonligForm.setMaxWidth(Double.MAX_VALUE);
-                treningsøktGridPane.add(cellTid,1, i);
+                treningsøktGridPane.add(cellPersonligForm,1, i);
 
                 Label cellPrestasjon = new Label(rs.getString("Prestasjon"));
                 cellPrestasjon.setAlignment(Pos.CENTER);
                 cellPrestasjon.setMaxWidth(Double.MAX_VALUE);
-                treningsøktGridPane.add(cellTid,2, i);
+                treningsøktGridPane.add(cellPrestasjon,2, i);
 
                 Label cellVarighet = new Label(rs.getString("Varighet"));
                 cellVarighet.setAlignment(Pos.CENTER);
                 cellVarighet.setMaxWidth(Double.MAX_VALUE);
-                treningsøktGridPane.add(cellTid,3, i);
+                treningsøktGridPane.add(cellVarighet,3, i);
 
                 Label cellInformasjon = new Label(rs.getString("Info"));
                 cellInformasjon.setAlignment(Pos.CENTER);
                 cellInformasjon.setMaxWidth(Double.MAX_VALUE);
-                treningsøktGridPane.add(cellTid,4, i);
+                treningsøktGridPane.add(cellInformasjon,4, i);
 
 //                Label cellNotat = new Label(rs.getString("Notat"));
 //                cellNotat.setAlignment(Pos.CENTER);
@@ -153,19 +180,36 @@ public class Controller implements Initializable{
         }
     }
 
+    @FXML
+    public void registrerØvelsesgruppe(){
+        String navn = registrerØvelsegruppeNavn.getText();
+        String beskrivelse = registrerØvelsegruppeBeskrivelse.getText();
+        try {
+            Statement myStatement1 = myConn.createStatement();
+            ResultSet rs = myStatement1.executeQuery("SELECT ØGID FROM Øvelsesgruppe");
+            rs.next();
+            int ØvelsesgruppeID = Integer.parseInt(rs.getString("ØGID")) + 1;
+
+            Statement myStatement2 = myConn.createStatement();
+            String sql = "INSERT INTO Øvelsesgruppe VALUES(" + ØvelsesgruppeID + ",'" + navn + "','" + beskrivelse + "')";
+            System.out.println(sql);
+            myStatement2.executeUpdate(sql);
+        }catch(Exception e){
+
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("Prosjektet fungerer...");
         try{
             Statement myStatement = myConn.createStatement();
             ResultSet rs2 = myStatement.executeQuery("SELECT Navn FROM Person");
             while (rs2.next()) {
                 String navn = rs2.getString("Navn");
-                System.out.println(navn);
                 liste.add(navn);
             }
-            System.out.println(liste);
             treningsøktComboBox.setItems(liste);
+            updatetreningsøktGridpane();
         }catch(Exception e){
 
         }
