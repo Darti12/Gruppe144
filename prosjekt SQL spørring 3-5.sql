@@ -25,10 +25,25 @@ INSERT INTO Øvelsesgruppe VALUES (1, "Styrke", "Styrkende øvelser"), (2, "Arms
                                  
 INSERT INTO ØvelseIGruppe VALUES (1, 2), (1, 1), (2, 3), (2, 1), (3, 1), (3, 2), (3, 3), (4, 1);
 
-#3
+#2
 SELECT T.TøID, T.Dato, T.Tid, T.PersonligForm, T.Prestasjon, T.Varighet, T.Info, N.NID, N.Beskrivelse
 FROM Treningsøkt AS T JOIN NOTAT AS N ON  (N.TøID = T.TøID)
 ORDER BY T.Dato, T.Tid ASC;
+
+#3
+SELECT T.TøID, T.Dato, T.Tid, T.PersonligForm, T.Prestasjon, T.Varighet, T.Informasjon
+FROM Treningsøkt AS T 
+ORDER BY T.Dato AND T.Tid;
+
+#3 NY!!!
+SELECT *
+FROM (
+SELECT treningsøkt.dato, treningsøkt.tid, øvelse.øvelseID, øvelse.navn
+FROM treningsøkt JOIN øvelsesøkt ON (treningsøkt.TøID = øvelsesøkt.TøID) 
+	 JOIN øvelse ON (øvelsesøkt.øvelseID = øvelse.øvelseID)
+ORDER BY treningsøkt.tid ASC) AS resultatLogg
+ORDER BY resultatLogg.dato DESC
+LIMIT N;
 
 #4
 SELECT Ø.ØvelseID, Ø.Navn
@@ -40,5 +55,6 @@ ORDER BY ØG.ØGID;
 SELECT Ø.ØvelseID, Ø.Navn, COUNT(Ø.ØvelseID) AS AntallAvØvelser
 FROM (Øvelse AS Ø JOIN Øvelsesøkt AS ØØ ON (Ø.ØvelseID = ØØ.ØvelseID))
 	 JOIN Treningsøkt AS T ON (T.TøID = ØØ.TøID)
-ORDER BY AntallAvØvelser DESC;
+ORDER BY AntallAvØvelser DESC
+LIMIT 3;
 
