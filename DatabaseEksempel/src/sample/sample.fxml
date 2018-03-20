@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
         <TabPane layoutX="14.0" layoutY="6.0" prefHeight="482.0" prefWidth="704.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
@@ -173,7 +173,7 @@
                               <AnchorPane prefHeight="670.0" prefWidth="874.0">
                                  <children>
                                     <ComboBox fx:id="øvelsesgruppeComboBox" layoutX="75.0" layoutY="85.0" onAction="#finnØvelserIGrupper" prefWidth="150.0" />
-                                    <Label layoutX="51.0" layoutY="23.0" text="Finn Øvelse i øvelsesgrupper:">
+                                    <Label layoutX="51.0" layoutY="23.0" text="Finn Øvelser i øvelsesgrupper:">
                                        <font>
                                           <Font size="17.0" />
                                        </font>

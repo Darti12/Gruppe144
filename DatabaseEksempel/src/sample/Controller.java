@@ -220,19 +220,16 @@ public class Controller implements Initializable{
     @FXML
     public void finnØvelserIGrupper(){
         øvelserIGruppe.getItems().clear();
-        øvelsegrupper.clear();
+        øvelseIGrupper.clear();
         try {
             String gruppe = øvelsesgruppeComboBox.getValue();
             Statement myStatement1 = myConn.createStatement();
             ResultSet rs1 = myStatement1.executeQuery("SELECT ØGID FROM Øvelsesgruppe WHERE Øvelsesgruppe.Navn = '" + gruppe + "'");
             rs1.next();
             Statement myStatement2 = myConn.createStatement();
-            ResultSet rs2 = myStatement2.executeQuery("SELECT Ø.ØvelseID, Ø.Navn " +
-                    "FROM (Øvelse AS Ø JOIN ØvelseIGruppe AS ØIG ON (Ø.ØvelseID=ØIG.ØvelseID))" +
-                    " JOIN Øvelsesgruppe AS ØG ON ØG.ØGID=" + rs1.getString("ØGID") +
-                    "ORDER BY ØG.ØGID;");
+            ResultSet rs2 = myStatement2.executeQuery("SELECT Øvelse.Navn FROM (Øvelse NATURAL JOIN ØvelseIGruppe) JOIN Øvelsesgruppe WHERE ØvelseIGruppe.ØGID=" + rs1.getString("ØGID"));
             while(rs2.next()){
-                øvelseIGrupper.add(rs2.getString("Ø.Navn"));
+                øvelseIGrupper.add(rs2.getString("Navn"));
             }
             øvelserIGruppe.setItems(øvelseIGrupper);
         }catch(Exception e){
