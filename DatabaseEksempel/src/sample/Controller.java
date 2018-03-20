@@ -1,6 +1,5 @@
 package sample;
 
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,7 +15,11 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable{
     public Connection myConn;
-    private ObservableList<String> liste = FXCollections.observableArrayList();
+    private ObservableList<String> treningsøkter = FXCollections.observableArrayList();
+    private ObservableList<String> øvelsegrupper = FXCollections.observableArrayList();
+    private ObservableList<String> øvelseIGrupper = FXCollections.observableArrayList();
+
+
 
     @FXML public TextField apparatNavn;
     @FXML public TextField apparatFunksjon;
@@ -28,10 +31,13 @@ public class Controller implements Initializable{
     @FXML public TextField treningsøktVarighet;
     @FXML public TextField treningsøktInformasjon;
     @FXML private ComboBox<String> treningsøktComboBox;
+    @FXML private ComboBox<String> ØvelseComboBox;
+    @FXML private ComboBox<String> øvelsesgruppeComboBox;
     @FXML private GridPane treningsøktGridPane;
     @FXML private TextField treningsøktrader;
     @FXML private TextField registrerØvelsegruppeNavn;
     @FXML private TextField registrerØvelsegruppeBeskrivelse;
+    @FXML private ListView øvelserIGruppe;
 
 
     public Controller() throws SQLException {
@@ -66,17 +72,27 @@ public class Controller implements Initializable{
     @FXML
     private void registrerØvelse(){
         try {
-            Statement myStatement2 = myConn.createStatement();
-            ResultSet rs2 = myStatement2.executeQuery("SELECT MAX(ØvelseID) FROM Øvelse");
-            rs2.next();
-            int tallID = Integer.parseInt(rs2.getString("MAX(ØvelseID)")) + 1;
+                Statement myStatement2 = myConn.createStatement();
+                ResultSet rs2 = myStatement2.executeQuery("SELECT MAX(ØvelseID) FROM Øvelse");
+                rs2.next();
+                int øvelseID = Integer.parseInt(rs2.getString("MAX(ØvelseID)")) + 1;
 
-            String navn = øvelseNavn.getText();
+                Statement myStatement3 = myConn.createStatement();
+                ResultSet rs3 = myStatement3.executeQuery("SELECT * FROM Øvelsesgruppe WHERE Navn = '" + ØvelseComboBox.getValue() + "'");
+                rs3.next();
+                int gruppeID = Integer.parseInt(rs3.getString("ØGID"));
 
-            Statement myStatement = myConn.createStatement();
-            String sql = "Insert into Øvelse VALUES(" + tallID + ", '" + navn + "')";
-            System.out.println(sql);
-            myStatement.executeUpdate(sql);
+                String navn = øvelseNavn.getText();
+
+                Statement myStatement4 = myConn.createStatement();
+                String sql1 = "Insert into Øvelse VALUES(" + øvelseID + ", '" + navn + "')";
+                System.out.println(sql1);
+                myStatement4.executeUpdate(sql1);
+
+                Statement myStatement5 = myConn.createStatement();
+                String sql2 = "Insert into ØvelseIGruppe VALUES(" + øvelseID + ", " + gruppeID + ")";
+                System.out.println(sql2);
+                myStatement5.executeUpdate(sql2);
         }catch(Exception e){
             System.out.println(e);
         }
@@ -141,7 +157,9 @@ public class Controller implements Initializable{
         treningsøktGridPane.add(Notat,5, 0);
         try {
             Statement myStatement = myConn.createStatement();
-            ResultSet rs = myStatement.executeQuery("SELECT * FROM Treningsøkt");
+            ResultSet rs = myStatement.executeQuery("SELECT * " +
+                    "FROM Treningsøkt AS T JOIN Notat AS N ON (N.TøID = T.TøID)" +
+                    "ORDER BY T.Dato, T.Tid ASC");
             for(int i = 1; i < Integer.parseInt(treningsøktrader.getText())+1; i++){
                 rs.next();
 
@@ -170,10 +188,10 @@ public class Controller implements Initializable{
                 cellInformasjon.setMaxWidth(Double.MAX_VALUE);
                 treningsøktGridPane.add(cellInformasjon,4, i);
 
-//                Label cellNotat = new Label(rs.getString("Notat"));
-//                cellNotat.setAlignment(Pos.CENTER);
-//                cellNotat.setMaxWidth(Double.MAX_VALUE);
-//                treningsøktGridPane.add(cellTid,5, i);
+                Label cellNotat = new Label(rs.getString("Beskrivelse"));
+                cellNotat.setAlignment(Pos.CENTER);
+                cellNotat.setMaxWidth(Double.MAX_VALUE);
+                treningsøktGridPane.add(cellNotat,5, i);
             }
         }catch(Exception e){
             System.out.println(e);
@@ -199,17 +217,51 @@ public class Controller implements Initializable{
         }
     }
 
+    @FXML
+    public void finnØvelserIGrupper(){
+        øvelserIGruppe.getItems().clear();
+        øvelsegrupper.clear();
+        try {
+            String gruppe = øvelsesgruppeComboBox.getValue();
+            Statement myStatement1 = myConn.createStatement();
+            ResultSet rs1 = myStatement1.executeQuery("SELECT ØGID FROM Øvelsesgruppe WHERE Øvelsesgruppe.Navn = '" + gruppe + "'");
+            rs1.next();
+            Statement myStatement2 = myConn.createStatement();
+            ResultSet rs2 = myStatement2.executeQuery("SELECT Ø.ØvelseID, Ø.Navn " +
+                    "FROM (Øvelse AS Ø JOIN ØvelseIGruppe AS ØIG ON (Ø.ØvelseID=ØIG.ØvelseID))" +
+                    " JOIN Øvelsesgruppe AS ØG ON ØG.ØGID=" + rs1.getString("ØGID") +
+                    "ORDER BY ØG.ØGID;");
+            while(rs2.next()){
+                øvelseIGrupper.add(rs2.getString("Ø.Navn"));
+            }
+            øvelserIGruppe.setItems(øvelseIGrupper);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try{
-            Statement myStatement = myConn.createStatement();
-            ResultSet rs2 = myStatement.executeQuery("SELECT Navn FROM Person");
+            //treningsøktcombox fylles ut
+            Statement myStatement1 = myConn.createStatement();
+            ResultSet rs1 = myStatement1.executeQuery("SELECT Navn FROM Person");
+            while (rs1.next()) {
+                String navn = rs1.getString("Navn");
+                treningsøkter.add(navn);
+            }
+            treningsøktComboBox.setItems(treningsøkter);
+            updatetreningsøktGridpane();
+
+            //øvelsesgruppe combobox fylles ut
+            Statement myStatement2 = myConn.createStatement();
+            ResultSet rs2 = myStatement2.executeQuery("SELECT Navn FROM Øvelsesgruppe");
             while (rs2.next()) {
                 String navn = rs2.getString("Navn");
-                liste.add(navn);
+                øvelsegrupper.add(navn);
             }
-            treningsøktComboBox.setItems(liste);
-            updatetreningsøktGridpane();
+            øvelsesgruppeComboBox.setItems(øvelsegrupper);
+            ØvelseComboBox.setItems(øvelsegrupper);
         }catch(Exception e){
 
         }
