@@ -25,10 +25,15 @@ INSERT INTO Øvelsesgruppe VALUES (1, "Styrke", "Styrkende øvelser"), (2, "Arms
                                  
 INSERT INTO ØvelseIGruppe VALUES (1, 2), (1, 1), (2, 3), (2, 1), (3, 1), (3, 2), (3, 3), (4, 1);
 
-#3
+#2
 SELECT T.TøID, T.Dato, T.Tid, T.PersonligForm, T.Prestasjon, T.Varighet, T.Info, N.NID, N.Beskrivelse
 FROM Treningsøkt AS T JOIN NOTAT AS N ON  (N.TøID = T.TøID)
 ORDER BY T.Dato, T.Tid ASC;
+
+#3
+SELECT T.TøID, T.Dato, T.Tid, T.PersonligForm, T.Prestasjon, T.Varighet, T.Informasjon
+FROM Treningsøkt AS T 
+ORDER BY T.Dato AND T.Tid;
 
 #4
 SELECT Ø.ØvelseID, Ø.Navn
