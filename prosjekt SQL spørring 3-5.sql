@@ -35,6 +35,16 @@ SELECT T.TøID, T.Dato, T.Tid, T.PersonligForm, T.Prestasjon, T.Varighet, T.Info
 FROM Treningsøkt AS T 
 ORDER BY T.Dato AND T.Tid;
 
+#3 NY!!!
+SELECT *
+FROM (
+SELECT treningsøkt.dato, treningsøkt.tid, øvelse.øvelseID, øvelse.navn
+FROM treningsøkt JOIN øvelsesøkt ON (treningsøkt.TøID = øvelsesøkt.TøID) 
+	 JOIN øvelse ON (øvelsesøkt.øvelseID = øvelse.øvelseID)
+ORDER BY treningsøkt.tid ASC) AS resultatLogg
+ORDER BY resultatLogg.dato DESC
+LIMIT N;
+
 #4
 SELECT Ø.ØvelseID, Ø.Navn
 FROM (Øvelse AS Ø JOIN ØvelseIGruppe AS ØIG ON (Ø.ØvelseID=ØIG.ØvelseID))
