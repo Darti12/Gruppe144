@@ -15,11 +15,12 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable{
     public Connection myConn;
-    private ObservableList<String> treningsøkter = FXCollections.observableArrayList();
+    private ObservableList<String> Personer = FXCollections.observableArrayList();
     private ObservableList<String> øvelsegrupper = FXCollections.observableArrayList();
     private ObservableList<String> øvelseIGrupper = FXCollections.observableArrayList();
-
-
+    private ObservableList<String> apparater = FXCollections.observableArrayList();
+    private ObservableList<String> treningsøkter = FXCollections.observableArrayList();
+    private ObservableList<String> øvelser = FXCollections.observableArrayList();
 
     @FXML public TextField apparatNavn;
     @FXML public TextField apparatFunksjon;
@@ -33,11 +34,26 @@ public class Controller implements Initializable{
     @FXML private ComboBox<String> treningsøktComboBox;
     @FXML private ComboBox<String> ØvelseComboBox;
     @FXML private ComboBox<String> øvelsesgruppeComboBox;
+    @FXML private ComboBox<String> ApparatComboBox;
+    @FXML private ComboBox<String> registrerØvelseTreningsøkt;
     @FXML private GridPane treningsøktGridPane;
     @FXML private TextField treningsøktrader;
     @FXML private TextField registrerØvelsegruppeNavn;
     @FXML private TextField registrerØvelsegruppeBeskrivelse;
+    @FXML private TextField registrerPersonNavn;
     @FXML private ListView øvelserIGruppe;
+    @FXML private TableView<String> resultatlogg;
+    @FXML private Spinner<Integer> registrerØvelseApparatKilo;
+    @FXML private Spinner<Integer> registrerØvelseApparatSett;
+    @FXML private TextArea registrerØvelseBeskrivelse;
+    @FXML private ComboBox<String> addPersonTilTreningsøktComboBox1;
+    @FXML private ComboBox<String> addPersonTilTreningsøktComboBox2;
+    @FXML private ComboBox<String> addØvelseTilTreningsøktComboBox1;
+    @FXML private ComboBox<String> addØvelseTilTreningsøktComboBox2;
+    @FXML private ComboBox<String> addØvelseTilØvelsesgruppeComboBox1;
+    @FXML private ComboBox<String> addØvelseTilØvelsesgruppeComboBox2;
+    @FXML private ComboBox<String> addNotatTilTreningsøktComboBox;
+    @FXML private TextArea addNotatTilTreningsøktTextArea;
 
 
     public Controller() throws SQLException {
@@ -45,6 +61,104 @@ public class Controller implements Initializable{
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             this.myConn = DriverManager.getConnection("jdbc:mysql://mysql.stud.ntnu.no:3306/filiphag_prosjekt", "filiphag_server", "123abc");
         }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+    @FXML
+    private void addPersonTilTreningsøkt(){
+        String navn = addPersonTilTreningsøktComboBox1.getValue();
+        String treningsøkt = addPersonTilTreningsøktComboBox2.getValue();
+
+
+        try {
+            Statement myStatement3 = myConn.createStatement();
+            ResultSet rs3 = myStatement3.executeQuery("SELECT PID FROM Person WHERE Navn = '" + navn + "'");
+            rs3.next();
+            int PID = Integer.parseInt(rs3.getString("PID"));
+
+            Statement myStatement2 = myConn.createStatement();
+            ResultSet rs2 = myStatement2.executeQuery("SELECT TøID FROM Treningsøkt WHERE Info = '" + treningsøkt + "'");
+            rs2.next();
+            int TøID = Integer.parseInt(rs2.getString("TøID"));
+
+            Statement myStatement = myConn.createStatement();
+            String sql = "INSERT INTO PersonITreningsøkt VALUES(" + PID + ", " +  TøID + ")";
+            System.out.println(sql);
+            myStatement.executeUpdate(sql);
+        }catch(Exception e) {
+            System.out.println(e);
+        }
+    }
+    @FXML
+    private void addØvelseTilTreningsøkt(){
+        String navn = addØvelseTilTreningsøktComboBox1.getValue();
+        String treningsøkt = addØvelseTilTreningsøktComboBox2.getValue();
+
+        try {
+            Statement myStatement1 = myConn.createStatement();
+            ResultSet rs1 = myStatement1.executeQuery("SELECT ØvelseID FROM Øvelse WHERE Navn='" + navn + "'");
+            rs1.next();
+            int øvelseID = Integer.parseInt(rs1.getString("ØvelseID"));
+
+            Statement myStatement2 = myConn.createStatement();
+            ResultSet rs2 = myStatement2.executeQuery("SELECT TøID FROM Treningsøkt WHERE Info='" + treningsøkt + "'");
+            rs2.next();
+            int TøID = Integer.parseInt(rs2.getString("TøID"));
+
+            Statement myStatement = myConn.createStatement();
+            String sql = "INSERT INTO Øvelsesøkt VALUES(" + øvelseID + ", " + TøID + ")";
+            System.out.println(sql);
+            myStatement.executeUpdate(sql);
+        }catch(Exception e) {
+            System.out.println(e);
+        }
+    }
+    @FXML
+    private void addØvelseTilØvelsesgruppe(){
+        String navn = addØvelseTilØvelsesgruppeComboBox1.getValue();
+        String øvelsesgruppe = addØvelseTilØvelsesgruppeComboBox2.getValue();
+        try {
+            Statement myStatement1 = myConn.createStatement();
+            ResultSet rs1 = myStatement1.executeQuery("SELECT ØvelseID FROM Øvelse WHERE Navn='" + navn + "'");
+            rs1.next();
+            int øvelseID = Integer.parseInt(rs1.getString("ØvelseID"));
+
+            Statement myStatement2 = myConn.createStatement();
+            ResultSet rs2 = myStatement2.executeQuery("SELECT ØGID FROM Øvelsesgruppe WHERE Navn='" + øvelsesgruppe + "'");
+            rs2.next();
+            int ØGID = Integer.parseInt(rs2.getString("ØGID"));
+
+            Statement myStatement = myConn.createStatement();
+            String sql = "INSERT INTO ØvelseIGruppe VALUES(" + øvelseID + ", " + ØGID + ")";
+            System.out.println(sql);
+            myStatement.executeUpdate(sql);
+        }catch(Exception e) {
+            System.out.println(e);
+        }
+    }
+    @FXML
+    private void addNotatTilTreningsøkt(){
+        String treningsøkt = addNotatTilTreningsøktComboBox.getValue();
+        String beskrivelse = addNotatTilTreningsøktTextArea.getText();
+
+        try {
+            Statement myStatement2 = myConn.createStatement();
+            ResultSet rs2 = myStatement2.executeQuery("SELECT TøID FROM Treningsøkt WHERE Info = '" + treningsøkt + "'");
+            rs2.next();
+            int TøID = Integer.parseInt(rs2.getString("TøID"));
+
+            Statement myStatement3 = myConn.createStatement();
+            ResultSet rs3 = myStatement3.executeQuery("SELECT NID FROM Notat");
+            rs3.next();
+            int NID = Integer.parseInt(rs3.getString("TøID")) + 1;
+
+            //TODO Gjør slik at comboboxen bare viser de treningsøktene som ikke allerede har et notat tilknyttet seg (motsatte av union på de to...)
+
+            Statement myStatement = myConn.createStatement();
+            String sql = "";
+            System.out.println(sql);
+            myStatement.executeUpdate(sql);
+        }catch(Exception e) {
             System.out.println(e);
         }
     }
@@ -67,34 +181,86 @@ public class Controller implements Initializable{
         }catch(Exception e){
             System.out.println(e);
         }
+        updateComboBoxes();
+        apparatNavn.setText("");
+        apparatFunksjon.setText("");
     }
 
     @FXML
     private void registrerØvelse(){
         try {
-                Statement myStatement2 = myConn.createStatement();
-                ResultSet rs2 = myStatement2.executeQuery("SELECT MAX(ØvelseID) FROM Øvelse");
-                rs2.next();
-                int øvelseID = Integer.parseInt(rs2.getString("MAX(ØvelseID)")) + 1;
+            Statement myStatement2 = myConn.createStatement();
+            ResultSet rs2 = myStatement2.executeQuery("SELECT MAX(ØvelseID) FROM Øvelse");
+            rs2.next();
+            int øvelseID = Integer.parseInt(rs2.getString("MAX(ØvelseID)")) + 1;
 
-                Statement myStatement3 = myConn.createStatement();
-                ResultSet rs3 = myStatement3.executeQuery("SELECT * FROM Øvelsesgruppe WHERE Navn = '" + ØvelseComboBox.getValue() + "'");
-                rs3.next();
-                int gruppeID = Integer.parseInt(rs3.getString("ØGID"));
+            Statement myStatement3 = myConn.createStatement();
+            ResultSet rs3 = myStatement3.executeQuery("SELECT * FROM Øvelsesgruppe WHERE Navn = '" + ØvelseComboBox.getValue() + "'");
+            rs3.next();
+            int gruppeID = Integer.parseInt(rs3.getString("ØGID"));
 
-                String navn = øvelseNavn.getText();
+            String navn = øvelseNavn.getText();
+            Statement myStatement4 = myConn.createStatement();
+            String sql1 = "Insert into Øvelse VALUES(" + øvelseID + ", '" + navn + "')";
+            System.out.println(sql1);
+            myStatement4.executeUpdate(sql1);
 
-                Statement myStatement4 = myConn.createStatement();
-                String sql1 = "Insert into Øvelse VALUES(" + øvelseID + ", '" + navn + "')";
-                System.out.println(sql1);
-                myStatement4.executeUpdate(sql1);
+            Statement myStatement5 = myConn.createStatement();
+            String sql2 = "Insert into ØvelseIGruppe VALUES(" + øvelseID + ", " + gruppeID + ")";
+            System.out.println(sql2);
+            myStatement5.executeUpdate(sql2);
 
-                Statement myStatement5 = myConn.createStatement();
-                String sql2 = "Insert into ØvelseIGruppe VALUES(" + øvelseID + ", " + gruppeID + ")";
-                System.out.println(sql2);
-                myStatement5.executeUpdate(sql2);
+            if(ApparatComboBox.getValue() != null){
+                int kilo = registrerØvelseApparatKilo.getValue();
+                int sett = registrerØvelseApparatSett.getValue();
+
+                Statement myStatement8 = myConn.createStatement();
+                ResultSet rs7 = myStatement3.executeQuery("SELECT ApparatID FROM Apparat WHERE Navn = '" + ApparatComboBox.getValue() + "'");
+                rs7.next();
+                int ApparatID = Integer.parseInt(rs7.getString("ApparatID"));
+
+                Statement myStatement9 = myConn.createStatement();
+                String sql4 = "Insert into ØvelseMedApparat VALUES(" + øvelseID + ", " + ApparatID + ", " + kilo + ", " + sett + ")";
+                System.out.println(sql4);
+                myStatement9.executeUpdate(sql4);
+            }else{
+                Statement myStatement10 = myConn.createStatement();
+                String sql5 = "Insert into Friøvelse VALUES(" + øvelseID + ", '" + registrerØvelseBeskrivelse.getText() + "')";
+                System.out.println(sql5);
+                myStatement10.executeUpdate(sql5);
+            }
+
+            if(registrerØvelseTreningsøkt.getValue() != null) {
+                Statement myStatement6 = myConn.createStatement();
+                ResultSet rs6 = myStatement3.executeQuery("SELECT TøID FROM Treningsøkt WHERE Info='" + registrerØvelseTreningsøkt.getValue() + "'");
+                rs6.next();
+                int TøID = Integer.parseInt(rs6.getString("TøID"));
+
+                Statement myStatement7 = myConn.createStatement();
+                String sql3 = "Insert into Øvelsesøkt VALUES(" + øvelseID + ", " + TøID + ")";
+                System.out.println(sql3);
+                myStatement7.executeUpdate(sql3);
+            }
         }catch(Exception e){
             System.out.println(e);
+        }
+        øvelseNavn.setText("");
+        ØvelseComboBox.setValue(null);
+        ApparatComboBox.setValue(null);
+        registrerØvelseBeskrivelse.setText("");
+        registrerØvelseTreningsøkt.setValue(null);
+    }
+
+    @FXML
+    private void registrerFriØvelse(){
+        if(ApparatComboBox.getValue() != null){
+            registrerØvelseBeskrivelse.setDisable(true);
+            registrerØvelseApparatKilo.setDisable(false);
+            registrerØvelseApparatSett.setDisable(false);
+        }else{
+            registrerØvelseApparatKilo.setDisable(true);
+            registrerØvelseApparatSett.setDisable(true);
+            registrerØvelseBeskrivelse.setDisable(false);
         }
     }
 
@@ -126,6 +292,12 @@ public class Controller implements Initializable{
         }catch(Exception e){
             System.out.println(e);
         }
+    }
+
+    @FXML
+    private void updateResultlog(){
+        resultatlogg.getItems().clear();
+
     }
 
     @FXML
@@ -204,9 +376,9 @@ public class Controller implements Initializable{
         String beskrivelse = registrerØvelsegruppeBeskrivelse.getText();
         try {
             Statement myStatement1 = myConn.createStatement();
-            ResultSet rs = myStatement1.executeQuery("SELECT ØGID FROM Øvelsesgruppe");
+            ResultSet rs = myStatement1.executeQuery("SELECT MAX(ØGID) FROM Øvelsesgruppe");
             rs.next();
-            int ØvelsesgruppeID = Integer.parseInt(rs.getString("ØGID")) + 1;
+            int ØvelsesgruppeID = Integer.parseInt(rs.getString("MAX(ØGID)")) + 1;
 
             Statement myStatement2 = myConn.createStatement();
             String sql = "INSERT INTO Øvelsesgruppe VALUES(" + ØvelsesgruppeID + ",'" + navn + "','" + beskrivelse + "')";
@@ -215,6 +387,30 @@ public class Controller implements Initializable{
         }catch(Exception e){
 
         }
+        updateComboBoxes();
+        registrerØvelsegruppeNavn.setText("");
+        registrerØvelsegruppeBeskrivelse.setText("");
+    }
+
+    @FXML
+    private void registrerPerson(){
+        try{
+            Statement myStatement1 = myConn.createStatement();
+            ResultSet rs1 = myStatement1.executeQuery("SELECT MAX(PID) FROM Person");
+            rs1.next();
+
+            int PID = Integer.parseInt(rs1.getString("MAX(PID)")) + 1;
+            String navn = registrerPersonNavn.getText();
+
+            Statement myStatement2 = myConn.createStatement();
+            String sql = "INSERT INTO Person VALUES(" + PID + ", '" + navn + "')";
+            System.out.println(sql);
+            myStatement2.executeUpdate(sql);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        updateComboBoxes();
+        registrerPersonNavn.setText("");
     }
 
     @FXML
@@ -224,33 +420,47 @@ public class Controller implements Initializable{
         try {
             String gruppe = øvelsesgruppeComboBox.getValue();
             Statement myStatement1 = myConn.createStatement();
-            ResultSet rs1 = myStatement1.executeQuery("SELECT ØGID FROM Øvelsesgruppe WHERE Øvelsesgruppe.Navn = '" + gruppe + "'");
+            ResultSet rs1 = myStatement1.executeQuery("SELECT MAX(ØGID) FROM Øvelsesgruppe WHERE Øvelsesgruppe.Navn = '" + gruppe + "'");
             rs1.next();
             Statement myStatement2 = myConn.createStatement();
-            ResultSet rs2 = myStatement2.executeQuery("SELECT Øvelse.Navn FROM (Øvelse NATURAL JOIN ØvelseIGruppe) JOIN Øvelsesgruppe WHERE ØvelseIGruppe.ØGID=" + rs1.getString("ØGID"));
+            ResultSet rs2 = myStatement2.executeQuery("SELECT Øvelse.Navn FROM (Øvelse NATURAL JOIN ØvelseIGruppe) JOIN Øvelsesgruppe WHERE ØvelseIGruppe.ØGID=" + rs1.getString("MAX(ØGID)"));
             while(rs2.next()){
                 øvelseIGrupper.add(rs2.getString("Navn"));
             }
             øvelserIGruppe.setItems(øvelseIGrupper);
-        }catch(Exception e){
+        }catch(Exception e) {
             System.out.println(e);
         }
     }
+    private void updateComboBoxes(){
+        treningsøktComboBox.getItems().clear();
+        øvelsesgruppeComboBox.getItems().clear();
+        ApparatComboBox.getItems().clear();
+        treningsøktComboBox.getItems().clear();
+        addPersonTilTreningsøktComboBox1.getItems().clear();
+        addPersonTilTreningsøktComboBox2.getItems().clear();
+        addØvelseTilTreningsøktComboBox1.getItems().clear();
+        addØvelseTilTreningsøktComboBox2.getItems().clear();
+        addØvelseTilØvelsesgruppeComboBox1.getItems().clear();
+        addØvelseTilØvelsesgruppeComboBox2.getItems().clear();
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+        Personer.clear();
+        øvelsegrupper.clear();
+        apparater.clear();
+        treningsøkter.clear();
+        øvelser.clear();
         try{
-            //treningsøktcombox fylles ut
+            //personer comboxer fylles ut
             Statement myStatement1 = myConn.createStatement();
             ResultSet rs1 = myStatement1.executeQuery("SELECT Navn FROM Person");
             while (rs1.next()) {
                 String navn = rs1.getString("Navn");
-                treningsøkter.add(navn);
+                Personer.add(navn);
             }
-            treningsøktComboBox.setItems(treningsøkter);
-            updatetreningsøktGridpane();
+            treningsøktComboBox.setItems(Personer);
+            addPersonTilTreningsøktComboBox1.setItems(Personer);
 
-            //øvelsesgruppe combobox fylles ut
+            //øvelsesgruppe comboboxer fylles ut
             Statement myStatement2 = myConn.createStatement();
             ResultSet rs2 = myStatement2.executeQuery("SELECT Navn FROM Øvelsesgruppe");
             while (rs2.next()) {
@@ -259,8 +469,53 @@ public class Controller implements Initializable{
             }
             øvelsesgruppeComboBox.setItems(øvelsegrupper);
             ØvelseComboBox.setItems(øvelsegrupper);
+            addØvelseTilØvelsesgruppeComboBox2.setItems(øvelsegrupper);
+
+            //apparat comboboxer fylles ut
+            Statement myStatement3 = myConn.createStatement();
+            ResultSet rs3 = myStatement3.executeQuery("SELECT Navn FROM Apparat");
+            while (rs3.next()) {
+                String navn = rs3.getString("Navn");
+                apparater.add(navn);
+            }
+            apparater.add(null);
+            ApparatComboBox.setItems(apparater);
+
+            //treningsøkter comboboxer fylles ut
+            Statement myStatement4 = myConn.createStatement();
+            ResultSet rs4 = myStatement1.executeQuery("SELECT Info FROM Treningsøkt ORDER BY Dato ASC");
+            while (rs4.next()) {
+                String navn = rs4.getString("Info");
+                treningsøkter.add(navn);
+            }
+            treningsøkter.add(null);
+            registrerØvelseTreningsøkt.setItems(treningsøkter);
+            addPersonTilTreningsøktComboBox2.setItems(treningsøkter);
+            addØvelseTilTreningsøktComboBox2.setItems(treningsøkter);
+            addNotatTilTreningsøktComboBox.setItems(treningsøkter);
+
+            //øvelse comboboxer fylles ut
+            Statement myStatement5 = myConn.createStatement();
+            ResultSet rs5 = myStatement5.executeQuery("SELECT Navn FROM Øvelse");
+            while (rs5.next()) {
+                String navn = rs5.getString("Navn");
+                øvelser.add(navn);
+            }
+            addØvelseTilTreningsøktComboBox1.setItems(øvelser);
+            addØvelseTilØvelsesgruppeComboBox1.setItems(øvelser);
+
         }catch(Exception e){
 
         }
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        updateComboBoxes();
+
+        SpinnerValueFactory<Integer> kiloverdier = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 20);
+        SpinnerValueFactory<Integer> settverdier = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 2);
+        this.registrerØvelseApparatKilo.setValueFactory(kiloverdier);
+        this.registrerØvelseApparatSett.setValueFactory(settverdier);
     }
 }

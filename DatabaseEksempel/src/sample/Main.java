@@ -14,6 +14,7 @@ public class Main extends Application {
         primaryStage.setTitle("Database Prosjekt Øving");
         primaryStage.setScene(new Scene(root, 1000, 700));
         primaryStage.show();
+        primaryStage.setResizable(false);
     }
 
 
