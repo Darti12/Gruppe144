@@ -47,7 +47,7 @@
                                         </AnchorPane>
                               <AnchorPane prefHeight="683.0" prefWidth="160.0">
                                  <children>
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#85b8ea" height="683.0" stroke="BLACK" strokeType="INSIDE" width="187.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#96a8ba" height="683.0" stroke="BLACK" strokeType="INSIDE" width="199.0" />
                                     <TextField fx:id="registrerØvelsegruppeNavn" layoutX="28.0" layoutY="65.0" />
                                     <TextField fx:id="registrerØvelsegruppeBeskrivelse" layoutX="27.0" layoutY="126.0" />
                                     <Label layoutX="87.0" layoutY="47.0" text="Navn:" />
@@ -75,7 +75,7 @@
                               </AnchorPane>
                                         <AnchorPane prefHeight="683.0" prefWidth="149.0">
                                             <children>
-                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#85b8ea" height="683.0" stroke="BLACK" strokeType="INSIDE" width="187.0" />
+                                    <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#96a8ba" height="683.0" stroke="BLACK" strokeType="INSIDE" width="199.0" />
                                                 <Label layoutX="14.0" layoutY="14.0" prefHeight="28.0" prefWidth="170.0" text="Registrer treningsøkt">
                                        <font>
                                           <Font name="System Bold" size="12.0" />

@@ -21,6 +21,8 @@ public class Controller implements Initializable{
     private ObservableList<String> apparater = FXCollections.observableArrayList();
     private ObservableList<String> treningsøkter = FXCollections.observableArrayList();
     private ObservableList<String> øvelser = FXCollections.observableArrayList();
+    private ObservableList<String> treningsøkterUtenNotat = FXCollections.observableArrayList();
+
 
     @FXML public TextField apparatNavn;
     @FXML public TextField apparatFunksjon;
@@ -148,19 +150,20 @@ public class Controller implements Initializable{
             int TøID = Integer.parseInt(rs2.getString("TøID"));
 
             Statement myStatement3 = myConn.createStatement();
-            ResultSet rs3 = myStatement3.executeQuery("SELECT NID FROM Notat");
+            ResultSet rs3 = myStatement3.executeQuery("SELECT MAX(NID) FROM Notat");
             rs3.next();
-            int NID = Integer.parseInt(rs3.getString("TøID")) + 1;
-
-            //TODO Gjør slik at comboboxen bare viser de treningsøktene som ikke allerede har et notat tilknyttet seg (motsatte av union på de to...)
+            int NID = Integer.parseInt(rs3.getString("MAX(NID)")) + 1;
 
             Statement myStatement = myConn.createStatement();
-            String sql = "";
+            String sql = "INSERT INTO Notat Values(" + NID + ", '" + beskrivelse + "', " + TøID + ")";
             System.out.println(sql);
             myStatement.executeUpdate(sql);
         }catch(Exception e) {
             System.out.println(e);
         }
+        addNotatTilTreningsøktComboBox.setValue(null);
+        addNotatTilTreningsøktTextArea.setText("");
+        updateComboBoxes();
     }
 
     @FXML
@@ -417,13 +420,13 @@ public class Controller implements Initializable{
     public void finnØvelserIGrupper(){
         øvelserIGruppe.getItems().clear();
         øvelseIGrupper.clear();
+        String gruppe = øvelsesgruppeComboBox.getValue();
         try {
-            String gruppe = øvelsesgruppeComboBox.getValue();
             Statement myStatement1 = myConn.createStatement();
-            ResultSet rs1 = myStatement1.executeQuery("SELECT MAX(ØGID) FROM Øvelsesgruppe WHERE Øvelsesgruppe.Navn = '" + gruppe + "'");
+            ResultSet rs1 = myStatement1.executeQuery("SELECT ØGID FROM Øvelsesgruppe WHERE Øvelsesgruppe.Navn = '" + gruppe + "'");
             rs1.next();
             Statement myStatement2 = myConn.createStatement();
-            ResultSet rs2 = myStatement2.executeQuery("SELECT Øvelse.Navn FROM (Øvelse NATURAL JOIN ØvelseIGruppe) JOIN Øvelsesgruppe WHERE ØvelseIGruppe.ØGID=" + rs1.getString("MAX(ØGID)"));
+            ResultSet rs2 = myStatement2.executeQuery("SELECT Øvelse.Navn FROM (Øvelse NATURAL JOIN ØvelseIGruppe) JOIN Øvelsesgruppe WHERE ØvelseIGruppe.ØGID=" + rs1.getString("ØGID") + " GROUP BY Øvelse.Navn");
             while(rs2.next()){
                 øvelseIGrupper.add(rs2.getString("Navn"));
             }
@@ -443,11 +446,13 @@ public class Controller implements Initializable{
         addØvelseTilTreningsøktComboBox2.getItems().clear();
         addØvelseTilØvelsesgruppeComboBox1.getItems().clear();
         addØvelseTilØvelsesgruppeComboBox2.getItems().clear();
+        addNotatTilTreningsøktComboBox.getItems().clear();
 
         Personer.clear();
         øvelsegrupper.clear();
         apparater.clear();
         treningsøkter.clear();
+        treningsøkterUtenNotat.clear();
         øvelser.clear();
         try{
             //personer comboxer fylles ut
@@ -492,7 +497,6 @@ public class Controller implements Initializable{
             registrerØvelseTreningsøkt.setItems(treningsøkter);
             addPersonTilTreningsøktComboBox2.setItems(treningsøkter);
             addØvelseTilTreningsøktComboBox2.setItems(treningsøkter);
-            addNotatTilTreningsøktComboBox.setItems(treningsøkter);
 
             //øvelse comboboxer fylles ut
             Statement myStatement5 = myConn.createStatement();
@@ -504,6 +508,18 @@ public class Controller implements Initializable{
             addØvelseTilTreningsøktComboBox1.setItems(øvelser);
             addØvelseTilØvelsesgruppeComboBox1.setItems(øvelser);
 
+
+
+
+            //treningsøkt uten noe notat combobox fylles ut
+            Statement myStatement6 = myConn.createStatement();
+            ResultSet rs6 = myStatement5.executeQuery("SELECT Info FROM Notat RIGHT JOIN Treningsøkt ON Notat.TøID=Treningsøkt.TøID WHERE Notat.NID IS NULL");
+            while (rs6.next()) {
+                String navn = rs6.getString("Info");
+                treningsøkterUtenNotat.add(navn);
+            }
+            addNotatTilTreningsøktComboBox.setItems(treningsøkterUtenNotat);
+
         }catch(Exception e){
 
         }
@@ -512,6 +528,7 @@ public class Controller implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         updateComboBoxes();
+        registrerFriØvelse();
 
         SpinnerValueFactory<Integer> kiloverdier = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 20);
         SpinnerValueFactory<Integer> settverdier = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 10, 2);
