@@ -25,7 +25,7 @@
     <children>
         <TabPane layoutX="14.0" layoutY="6.0" prefHeight="482.0" prefWidth="704.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <tabs>
-                <Tab text="Registrering">
+                <Tab text="1: Registrering">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
@@ -128,7 +128,7 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-            <Tab text="Lag forbindelse">
+            <Tab text="1: Lag forbindelse">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -199,7 +199,7 @@
                   </AnchorPane>
               </content>
             </Tab>
-                <Tab text="Treningsøkter">
+                <Tab text="2: Treningsøkter">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
@@ -264,33 +264,33 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="Resultatlogg">
+                <Tab text="3: Resultatlogg">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
                                 <Label layoutX="48.0" layoutY="73.0" text="Startdato" />
                                 <Label layoutX="46.0" layoutY="164.0" text="Starttid" />
-                                <TextField layoutX="46.0" layoutY="192.0" />
-                                <TextField layoutX="46.0" layoutY="363.0" />
+                                <TextField fx:id="resultatloggStartTid" layoutX="46.0" layoutY="192.0" promptText="16:08:00" />
+                                <TextField fx:id="resultatloggSluttTid" layoutX="46.0" layoutY="363.0" promptText="19:42:00" />
                                 <Label layoutX="48.0" layoutY="253.0" text="Sluttdato" />
                                 <Label layoutX="48.0" layoutY="336.0" text="Sluttid" />
-                                <DatePicker layoutX="46.0" layoutY="105.0" />
-                                <DatePicker layoutX="46.0" layoutY="280.0" />
+                                <DatePicker fx:id="resultatloggStartDato" layoutX="46.0" layoutY="105.0" />
+                                <DatePicker fx:id="resultatloggSluttDato" layoutX="46.0" layoutY="280.0" />
                                 <Button layoutX="47.0" layoutY="414.0" mnemonicParsing="false" onAction="#updateResultlog" prefHeight="26.0" prefWidth="164.0" text="Oppdater logg" />
                         <TableView fx:id="resultatlogg" layoutX="276.0" layoutY="53.0" prefHeight="453.0" prefWidth="501.0">
                           <columns>
-                            <TableColumn prefWidth="75.0" text="Dato" />
-                            <TableColumn prefWidth="75.0" text="Tid" />
-                              <TableColumn prefWidth="75.0" text="Varighet" />
-                              <TableColumn prefWidth="106.4000244140625" text="Prestasjon" />
-                              <TableColumn prefWidth="168.79998779296875" text="Informasjon" />
+                            <TableColumn fx:id="resultatloggDato" prefWidth="75.0" text="Dato" />
+                            <TableColumn fx:id="resultatloggTid" prefWidth="75.0" text="Tid" />
+                              <TableColumn fx:id="resultatloggVarighet" prefWidth="75.0" text="Varighet" />
+                              <TableColumn fx:id="resultatloggPrestasjon" prefWidth="106.4000244140625" text="Prestasjon" />
+                              <TableColumn fx:id="resultatloggInformasjon" prefWidth="168.79998779296875" text="Informasjon" />
                           </columns>
                         </TableView>
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="Øvelsegrupper">
+                <Tab text="4: Øvelsegrupper">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="548.0" prefWidth="887.0">
                             <children>
@@ -305,6 +305,7 @@
                                        </font>
                                     </Label>
                                     <ListView fx:id="øvelserIGruppe" layoutX="337.0" layoutY="145.0" prefHeight="302.0" prefWidth="200.0" />
+                                    <Label layoutX="140.0" layoutY="216.0" prefHeight="76.0" prefWidth="122.0" text="Registrering av øvelesgrupper er på første siden ;)" wrapText="true" />
                                  </children>
                               </AnchorPane>
                            </children>
@@ -313,9 +314,18 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab text="Mest brukte øvelser">
+                <Tab text="5: Mest brukte øvelser">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="407.0" layoutY="14.0" text="3 mest populære øvelser">
+                           <font>
+                              <Font size="17.0" />
+                           </font>
+                        </Label>
+                        <ListView fx:id="populæreøvelserListView" layoutX="400.0" layoutY="71.0" prefHeight="200.0" prefWidth="200.0" />
+                        <Button layoutX="455.0" layoutY="288.0" mnemonicParsing="false" onAction="#oppdaterpopulæreøvelser" prefHeight="46.0" prefWidth="90.0" text="Oppdater" />
+                     </children></AnchorPane>
                     </content>
                 </Tab>
             </tabs>

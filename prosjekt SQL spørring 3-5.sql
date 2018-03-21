@@ -1,4 +1,4 @@
-
+﻿
 INSERT INTO Person() VALUES (1, "Kari"), (2, "Ola");
 
 INSERT INTO Apparat VALUES (1, "Romaskin", "Roing"), (2, "Vekter", "Vektløfting");
@@ -57,4 +57,3 @@ FROM (Øvelse AS Ø JOIN Øvelsesøkt AS ØØ ON (Ø.ØvelseID = ØØ.ØvelseID)
 	 JOIN Treningsøkt AS T ON (T.TøID = ØØ.TøID)
 ORDER BY AntallAvØvelser DESC
 LIMIT 3;
-

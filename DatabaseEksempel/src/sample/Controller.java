@@ -9,9 +9,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
+import java.time.format.DateTimeFormatter;
 import java.net.URL;
 import java.sql.*;
 import java.util.ResourceBundle;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 public class Controller implements Initializable{
     public Connection myConn;
@@ -22,6 +24,8 @@ public class Controller implements Initializable{
     private ObservableList<String> treningsøkter = FXCollections.observableArrayList();
     private ObservableList<String> øvelser = FXCollections.observableArrayList();
     private ObservableList<String> treningsøkterUtenNotat = FXCollections.observableArrayList();
+    private ObservableList<Treningsøkt> treningsøktTable = FXCollections.observableArrayList();
+    private ObservableList<String> populæreøvelser = FXCollections.observableArrayList();
 
 
     @FXML public TextField apparatNavn;
@@ -44,7 +48,7 @@ public class Controller implements Initializable{
     @FXML private TextField registrerØvelsegruppeBeskrivelse;
     @FXML private TextField registrerPersonNavn;
     @FXML private ListView øvelserIGruppe;
-    @FXML private TableView<String> resultatlogg;
+    @FXML private TableView resultatlogg;
     @FXML private Spinner<Integer> registrerØvelseApparatKilo;
     @FXML private Spinner<Integer> registrerØvelseApparatSett;
     @FXML private TextArea registrerØvelseBeskrivelse;
@@ -56,6 +60,16 @@ public class Controller implements Initializable{
     @FXML private ComboBox<String> addØvelseTilØvelsesgruppeComboBox2;
     @FXML private ComboBox<String> addNotatTilTreningsøktComboBox;
     @FXML private TextArea addNotatTilTreningsøktTextArea;
+    @FXML private TextField resultatloggStartTid;
+    @FXML private TextField resultatloggSluttTid;
+    @FXML private DatePicker resultatloggStartDato;
+    @FXML private DatePicker resultatloggSluttDato;
+    @FXML private TableColumn resultatloggTid;
+    @FXML private TableColumn resultatloggDato;
+    @FXML private TableColumn resultatloggVarighet;
+    @FXML private TableColumn resultatloggPrestasjon;
+    @FXML private TableColumn resultatloggInformasjon;
+    @FXML private ListView populæreøvelserListView;
 
 
     public Controller() throws SQLException {
@@ -295,12 +309,60 @@ public class Controller implements Initializable{
         }catch(Exception e){
             System.out.println(e);
         }
+        updateComboBoxes();
     }
 
     @FXML
     private void updateResultlog(){
         resultatlogg.getItems().clear();
+        treningsøktTable.clear();
+        String startDato = resultatloggStartDato.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String startTid = resultatloggStartTid.getText();
+        String sluttDato = resultatloggSluttDato.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String sluttTid = resultatloggSluttTid.getText();
 
+        try{
+            Statement myStatement3 = myConn.createStatement();
+            ResultSet rs3 = myStatement3.executeQuery("SELECT * FROM Treningsøkt Where Dato BETWEEN '" + startDato + "' and '" + sluttDato + "' AND Tid BETWEEN '" + startTid + "' AND '" + sluttTid + "'");
+            //TODO Tror jeg kanskje tolket oppgaven feil? (spør i neste møte)
+
+            while(rs3.next()){
+                treningsøktTable.add(new Treningsøkt(
+                        rs3.getString("Dato"),
+                        rs3.getString("Tid"),
+                        rs3.getString("Varighet"),
+                        rs3.getString("Prestasjon"),
+                        rs3.getString("Info")));
+            }
+            resultatloggDato.setCellValueFactory(new PropertyValueFactory<>("Dato"));
+            resultatloggTid.setCellValueFactory(new PropertyValueFactory<>("Tid"));
+            resultatloggPrestasjon.setCellValueFactory(new PropertyValueFactory<>("Prestasjon"));
+            resultatloggVarighet.setCellValueFactory(new PropertyValueFactory<>("Varighet"));
+            resultatloggInformasjon.setCellValueFactory(new PropertyValueFactory<>("Informasjon"));
+
+            resultatlogg.setItems(treningsøktTable);
+        }catch(Exception e){
+
+        }
+    }
+
+    @FXML
+    private void oppdaterpopulæreøvelser(){
+        populæreøvelser.clear();
+        populæreøvelserListView.getItems().clear();
+
+        try{
+            Statement myStatement = myConn.createStatement();
+            ResultSet rs = myStatement.executeQuery("");
+
+            //TODO legg inn et SQL Query for å hente de 3 mest populære øvelsene... (den i filen fungerer ikke)
+            while(rs.next()){
+                populæreøvelser.add(rs.getString("Navn"));
+            }
+            populæreøvelserListView.setItems(populæreøvelser);
+        }catch(Exception e){
+
+        }
     }
 
     @FXML
