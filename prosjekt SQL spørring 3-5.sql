@@ -54,6 +54,7 @@ ORDER BY ØG.ØGID;
 #5
 SELECT Ø.ØvelseID, Ø.Navn, COUNT(Ø.ØvelseID) AS AntallAvØvelser
 FROM (Øvelse AS Ø JOIN Øvelsesøkt AS ØØ ON (Ø.ØvelseID = ØØ.ØvelseID))
-	 JOIN Treningsøkt AS T ON (T.TøID = ØØ.TøID)
+JOIN Treningsøkt AS T ON (T.TøID = ØØ.TøID)
+GROUP BY Ø.ØvelseID, Ø.Navn
 ORDER BY AntallAvØvelser DESC
 LIMIT 3;
