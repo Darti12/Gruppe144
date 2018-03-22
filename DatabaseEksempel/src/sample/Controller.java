@@ -31,7 +31,7 @@ public class Controller implements Initializable{
     @FXML public TextField apparatNavn;
     @FXML public TextField apparatFunksjon;
     @FXML public TextField øvelseNavn;
-    @FXML public TextField treningsøktDato;
+    @FXML public DatePicker treningsøktDato;
     @FXML public TextField treningsøktTid;
     @FXML public TextField treningsøktPersonligForm;
     @FXML public TextField treningsøktPrestasjon;
@@ -266,6 +266,8 @@ public class Controller implements Initializable{
         ApparatComboBox.setValue(null);
         registrerØvelseBeskrivelse.setText("");
         registrerØvelseTreningsøkt.setValue(null);
+
+        updateComboBoxes();
     }
 
     @FXML
@@ -295,7 +297,7 @@ public class Controller implements Initializable{
             rs3.next();
             int PID = Integer.parseInt(rs3.getString("PID"));
 
-            String treningsøktdato = treningsøktDato.getText();
+            String treningsøktdato = treningsøktDato.getValue().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             String treningsøkttid = treningsøktTid.getText();
             int personligform = Integer.parseInt(treningsøktPersonligForm.getText());
             int prestasjon = Integer.parseInt(treningsøktPrestasjon.getText());
