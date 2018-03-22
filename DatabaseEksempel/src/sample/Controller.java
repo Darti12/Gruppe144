@@ -353,7 +353,12 @@ public class Controller implements Initializable{
 
         try{
             Statement myStatement = myConn.createStatement();
-            ResultSet rs = myStatement.executeQuery("");
+            ResultSet rs = myStatement.executeQuery("SELECT Ø.ØvelseID, Ø.Navn, COUNT(Ø.ØvelseID) AS AntallAvØvelser" +
+                    " FROM (Øvelse AS Ø JOIN Øvelsesøkt AS ØØ ON (Ø.ØvelseID = ØØ.ØvelseID))" +
+                    " JOIN Treningsøkt AS T ON (T.TøID = ØØ.TøID)" +
+                    " GROUP BY Ø.ØvelseID, Ø.Navn" +
+                    " ORDER BY AntallAvØvelser DESC" +
+                    " LIMIT 3;");
 
             //TODO legg inn et SQL Query for å hente de 3 mest populære øvelsene... (den i filen fungerer ikke)
             while(rs.next()){
